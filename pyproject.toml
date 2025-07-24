@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "llm-orchestrator-cli"
+version = "0.1.0"
+description = "A CLI for orchestrating LLM queries."
+authors = ["Baggy"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+click = "^8.2.1"
+rich = "^14.0.0"
+pydantic = "^2.11.7"
+cryptography = "^45.0.5"
+anthropic = "^0.59.0"
+google-generativeai = "^0.8.5"
+deepseek = "^1.0.0"
+mistralai = "^1.9.3"
+pyyaml = "^6.0.2"
+mkdocs = "^1.6.1"
+mkdocs-material = "^9.6.15"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]

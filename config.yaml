@@ -1,0 +1,7 @@
+chains:
+  example_chain:
+  - GenerateCode>/Developer)-gemini
+  - Critique>/Tester)-anthropic-haiku
+main_llm:
+  model: gemini-1.5-flash-latest
+  provider: gemini

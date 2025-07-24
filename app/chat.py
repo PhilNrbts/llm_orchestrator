@@ -8,6 +8,7 @@ from rich.text import Text
 from rich.prompt import Prompt
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.key_binding import KeyBindings
 from app.orchestrator import get_client, MODEL_CONFIG, get_system_prompts
 from app.key_management import get_api_keys
 
@@ -216,7 +217,14 @@ class Chat:
     async def start(self):
         """Start the interactive chat session."""
         layout = self._make_layout()
-        session = PromptSession(completer=self.command_completer, complete_while_typing=True)
+        
+        bindings = KeyBindings()
+        @bindings.add('down')
+        def _(event):
+            if not event.app.current_buffer.text:
+                event.app.current_buffer.start_completion(select_first=False)
+
+        session = PromptSession(completer=self.command_completer, complete_while_typing=True, key_bindings=bindings)
         try:
             while not self.should_exit:
                 console.clear()

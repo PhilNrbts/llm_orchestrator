@@ -1,13 +1,50 @@
 # Configuration for LLM Providers and Models
 
+## Model Definitions
+
+Detailed configurations for each supported model provider are defined below.
+
+### Mistral
+
+mistral:
+  api_key_name: MISTRAL_API_KEY
+  default_model: mistral-7b
+  models:
+    - name: mistral-7b
+      max_tokens: 4096
+    - name: mistral-8x7b
+      max_tokens: 8192
+  additional_configs:
+    - temperature: 0.7
+    - max_gen_tokens: 1024
+
+### DeepSeek
+
+deepseek:
+  api_key_name: DEEPSEEK_API_KEY
+  default_model: deepseek-chat
+  models:
+    - name: deepseek-chat
+      max_tokens: 4096
+    - name: deepseek-coder
+      max_tokens: 2048
+  additional_configs:
+    - presence_penalty: 0.2
+    - frequency_penalty: 0.2
+
+### Anthropic
+
 anthropic:
   api_key_name: ANTHROPIC_API_KEY
-  default_model: claude-3-5-sonnet-20240620
+  default_model: claude-3-5-sonnet
   models:
-    - name: claude-3-5-sonnet-20240620
+    - name: claude-3-5-sonnet
       max_tokens: 4096
-    - name: claude-3-haiku-20240307
-      max_tokens: 1000
+    - name: claude-3-haiku
+      max_tokens: 2048
+  additional_configs:
+    - temperature: 0.5
+    - top_p: 1.0
 
 gemini:
   api_key_name: GEMINI_API_KEY
@@ -21,20 +58,6 @@ gemini:
       temperature: 0.7
     - name: gemini-1.0-pro
       temperature: 0.7
-
-deepseek:
-  api_key_name: DEEPSEEK_API_KEY
-  default_model: deepseek-chat
-  models:
-    - name: deepseek-chat
-      max_tokens: 1024
-
-mistral:
-  api_key_name: MISTRAL_API_KEY
-  default_model: mistral-large-latest
-  models:
-    - name: mistral-large-latest
-      temperature: 0.5
 
 system_prompts:
   roles:

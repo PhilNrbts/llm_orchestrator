@@ -53,3 +53,4 @@ async def test_provider_model_generation(provider, model_name):
 
     assert isinstance(response, str)
     assert len(response) > 0
+    assert not response.startswith("Error:")

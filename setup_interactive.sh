@@ -86,7 +86,9 @@ if [[ "$response" =~ ^(yes|y|)$ ]]; then
     echo "After a few seconds, run the command below in your terminal."
     echo -e "${RED}Remember to replace 'your-vault-password' with your actual password.${NC}"
     echo
-    echo -e "  curl -X POST http://localhost:8000/query -H "Content-Type: application/json" -d '{"prompt": "Hello", "password": "your-vault-password", "mode": "parallel"}'"
+    cat <<'EOF'
+  curl -X POST http://localhost:8000/query -H "Content-Type: application/json" -d '{"prompt": "Hello", "password": "your-vault-password", "mode": "parallel"}'
+EOF
     echo
 else
     echo "You can start the service later with the following command:"

@@ -87,7 +87,7 @@ docker build -t llm-orchestrator .
 ##### Step 2: Initialize the Encrypted Vault
 Run the vault script to securely store your API keys. You will be prompted for your keys and a master password.
 ```bash
-docker run -it --rm -v "${PWD}:/app" llm-orchestrator python app/init_vault.py
+docker run -it --rm --entrypoint python -v "${PWD}:/app" llm-orchestrator app/init_vault.py
 ```
 
 ##### Step 3: Run the Orchestrator Service

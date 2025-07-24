@@ -52,7 +52,7 @@ if [[ "$response" =~ ^(yes|y|)$ ]]; then
     echo
     read -p "Press [Enter] to continue..."
     
-    docker run -it --rm -v "${PWD}:/app" llm-orchestrator python app/init_vault.py
+    docker run -it --rm --entrypoint python -v "${PWD}:/app" llm-orchestrator app/init_vault.py
     if [ $? -ne 0 ]; then
         echo -e "${RED}Error: Vault initialization failed or was cancelled.${NC}"
         exit 1

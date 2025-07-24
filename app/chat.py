@@ -9,6 +9,8 @@ from rich.prompt import Prompt
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.filters import Condition
+from prompt_toolkit.application import get_app
 from app.orchestrator import get_client, MODEL_CONFIG, get_system_prompts
 from app.key_management import get_api_keys
 
@@ -214,15 +216,16 @@ class Chat:
         self.carry_context = False
         return f"--- Conversation History ---\n{context}\n--- New Prompt ---\n{final_prompt}"
 
+    from prompt_toolkit.filters import Condition
+
     async def start(self):
         """Start the interactive chat session."""
         layout = self._make_layout()
         
         bindings = KeyBindings()
-        @bindings.add('down')
+        @bindings.add('down', filter=Condition(lambda: not get_app().current_buffer.text))
         def _(event):
-            if not event.app.current_buffer.text:
-                event.app.current_buffer.start_completion(select_first=False)
+            event.app.current_buffer.start_completion(select_first=False)
 
         session = PromptSession(completer=self.command_completer, complete_while_typing=True, key_bindings=bindings)
         try:

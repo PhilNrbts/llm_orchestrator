@@ -2,7 +2,8 @@ import os
 import asyncio
 import hashlib
 import base64
-from typing import Dict, List
+import yaml
+from typing import Dict, List, Any
 
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, Field
@@ -12,8 +13,25 @@ from app.clients import get_client
 
 # --- Configuration ---
 VAULT_FILE_PATH = os.environ.get("VAULT_FILE_PATH", "/app/vault.enc")
+MODELS_CONFIG_PATH = os.environ.get("MODELS_CONFIG_PATH", "/app/../models.yaml")
 PASSWORD_SALT = b"a-secure-random-salt-should-be-used-here"
-MODEL_SEQUENCE = ["gemini", "anthropic", "mistral", "deepseek"]
+
+# --- Load Model Configuration ---
+def load_model_config() -> Dict[str, Any]:
+    """Load model configurations from the YAML file."""
+    try:
+        with open(MODELS_CONFIG_PATH, 'r') as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        # In a real app, you might have a default config or a more robust error handling
+        return {}
+    except yaml.YAMLError as e:
+        # Handle YAML parsing errors
+        raise RuntimeError(f"Error parsing {MODELS_CONFIG_PATH}: {e}")
+
+MODEL_CONFIG = load_model_config()
+MODEL_SEQUENCE = list(MODEL_CONFIG.keys())
+
 
 # --- FastAPI App Initialization ---
 app = FastAPI(
@@ -65,22 +83,27 @@ class SequentialResponse(BaseModel):
 async def parallel_query(prompt: str, api_keys: Dict[str, str]) -> Dict[str, str]:
     """Query all models simultaneously."""
     tasks = []
-    model_names = list(api_keys.keys())
-
-    for key_name in model_names:
-        model_id = key_name.replace("_API_KEY", "").lower()
-        client = get_client(model_id, api_keys[key_name])
-        tasks.append(client.query(prompt))
+    
+    for model_id, config in MODEL_CONFIG.items():
+        key_name = f"{model_id.upper()}_API_KEY"
+        if key_name in api_keys:
+            client = get_client(
+                client_name=model_id,
+                api_key=api_keys[key_name],
+                model_config=config
+            )
+            tasks.append(client.query(prompt))
 
     responses = await asyncio.gather(*tasks, return_exceptions=True)
     
     results = {}
-    for i, model_key in enumerate(model_names):
-        model_id = model_key.replace("_API_KEY", "").lower()
-        if isinstance(responses[i], Exception):
-            results[model_id] = f"Error: {responses[i]}"
-        else:
-            results[model_id] = responses[i]
+    model_ids = list(MODEL_CONFIG.keys())
+    for i, model_id in enumerate(model_ids):
+        if i < len(responses):
+            if isinstance(responses[i], Exception):
+                results[model_id] = f"Error: {responses[i]}"
+            else:
+                results[model_id] = responses[i]
             
     return results
 
@@ -94,7 +117,12 @@ async def sequential_refinement(prompt: str, api_keys: Dict[str, str]) -> List[D
         if key_name not in api_keys:
             continue
 
-        client = get_client(model_id, api_keys[key_name])
+        config = MODEL_CONFIG.get(model_id, {})
+        client = get_client(
+            client_name=model_id,
+            api_key=api_keys[key_name],
+            model_config=config
+        )
         response = await client.query(current_prompt)
         
         conversation.append({"role": model_id, "content": response})

@@ -5,6 +5,6 @@ python-multipart
 cryptography
 anthropic
 google-generativeai
-deepseek-api
+deepseek
 mistralai
 PyYAML

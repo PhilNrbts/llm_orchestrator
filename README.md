@@ -42,36 +42,51 @@ llm_orchestrator/
 
 ## Setup and Deployment
 
-### Prerequisites
--   **Windows**: WSL2 and Docker Desktop installed.
--   **Android**: Termux and `proot-distro` for running a Linux distribution with Docker support.
+For the best experience, we recommend using the provided interactive setup script or the VS Code Dev Container.
 
-### Step 1: Initialize the Encrypted Vault
+### Recommended: Interactive Setup
 
-First, you need to securely store your API keys.
+An interactive script is provided to guide you through the setup process. To use it, make it executable and run it:
+```bash
+chmod +x setup_interactive.sh
+./setup_interactive.sh
+```
+Alternatively, you can use the `setup.ipynb` Jupyter Notebook for a cell-by-cell guided setup.
 
-1.  **Build the Docker image:**
+### Development Environment: VS Code Dev Containers
+
+This project is configured to use VS Code Dev Containers, which provides a fully-featured development environment running inside Docker. This is the recommended way to develop and contribute to this project.
+
+1.  Make sure you have the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) installed in VS Code.
+2.  Open the project folder in VS Code.
+3.  Click the "Reopen in Container" button when prompted.
+
+This will build the container and connect your VS Code instance to it, providing a seamless development experience.
+
+### Manual Setup
+
+If you prefer a manual setup, follow these steps:
+
+#### Step 1: Build the Docker Image
+```bash
+docker build -t llm-orchestrator .
+```
+
+#### Step 2: Initialize the Encrypted Vault
+Run the vault script to securely store your API keys. You will be prompted for your keys and a master password.
+```bash
+docker run -it --rm -v "${PWD}:/app" llm-orchestrator python app/init_vault.py
+```
+
+#### Step 3: Run the Orchestrator Service
+Run the container in detached mode, mapping the necessary ports and volumes.
+-   **On Linux/macOS/WSL:**
     ```bash
-    docker build -t llm-orchestrator .
-    ```
-
-2.  **Run the vault initialization script:**
-    ```bash
-    docker run -it --rm -v "${PWD}:/app" llm-orchestrator python app/init_vault.py
-    ```
-    You will be prompted to enter your API keys and set a master password for the vault. This will create a `vault.enc` file in your project directory.
-
-### Step 2: Run the Orchestrator Service
-
-Run the container in detached mode, mapping the port and the workspace volume.
-
--   **On Windows (from PowerShell/WSL):**
-    ```bash
-    docker run -d --name llm-engine -p 8000:8000 -v "${PWD}/workspace:/workspace" -v "${PWD}/vault.enc:/app/vault.enc" --rm llm-orchestrator
+    docker run -d --name llm-engine -p 8000:8000 -v "${PWD}/vault.enc:/vault.enc" -v "${PWD}/models.yaml:/models.yaml" -v "${PWD}/workspace:/workspace" --rm llm-orchestrator
     ```
 -   **On Android (from Termux after proot-distro login):**
     ```bash
-    docker run -d --name llm-engine -p 8000:8000 -v "$HOME/storage/shared/LLMWorkspace:/workspace" -v "$(pwd)/vault.enc:/app/vault.enc" --rm llm-orchestrator
+    docker run -d --name llm-engine -p 8000:8000 -v "$HOME/storage/shared/LLMWorkspace:/workspace" -v "$(pwd)/vault.enc:/vault.enc" -v "$(pwd)/models.yaml:/models.yaml" --rm llm-orchestrator
     ```
     *Note: Make sure the `LLMWorkspace` directory exists in your Android's shared storage.*
 

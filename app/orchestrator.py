@@ -12,8 +12,8 @@ from cryptography.fernet import Fernet, InvalidToken
 from app.clients import get_client
 
 # --- Configuration ---
-VAULT_FILE_PATH = os.environ.get("VAULT_FILE_PATH", "/app/vault.enc")
-MODELS_CONFIG_PATH = os.environ.get("MODELS_CONFIG_PATH", "/app/../models.yaml")
+VAULT_FILE_PATH = os.environ.get("VAULT_FILE_PATH", "vault.enc")
+MODELS_CONFIG_PATH = os.environ.get("MODELS_CONFIG_PATH", "models.yaml")
 PASSWORD_SALT = b"a-secure-random-salt-should-be-used-here"
 
 # --- Load Model Configuration ---

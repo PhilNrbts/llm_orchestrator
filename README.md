@@ -42,9 +42,21 @@ llm_orchestrator/
 
 ## Setup and Deployment
 
+### Quick Start (One-Liner)
+
+For the fastest setup on Linux, macOS, or WSL, you can run the following command in your terminal. It will download and run the interactive setup script without needing to clone the repository first.
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/PhilNrbts/llm_orchestrator/master/setup_interactive.sh)
+```
+
+After the script completes, you can run the service as instructed.
+
+### Other Setup Options
+
 For the best experience, we recommend using the provided interactive setup script or the VS Code Dev Container.
 
-### Recommended: Interactive Setup
+#### Recommended: Interactive Setup
 
 An interactive script is provided to guide you through the setup process. To use it, make it executable and run it:
 ```bash
@@ -53,7 +65,7 @@ chmod +x setup_interactive.sh
 ```
 Alternatively, you can use the `setup.ipynb` Jupyter Notebook for a cell-by-cell guided setup.
 
-### Development Environment: VS Code Dev Containers
+#### Development Environment: VS Code Dev Containers
 
 This project is configured to use VS Code Dev Containers, which provides a fully-featured development environment running inside Docker. This is the recommended way to develop and contribute to this project.
 
@@ -63,22 +75,22 @@ This project is configured to use VS Code Dev Containers, which provides a fully
 
 This will build the container and connect your VS Code instance to it, providing a seamless development experience.
 
-### Manual Setup
+#### Manual Setup
 
 If you prefer a manual setup, follow these steps:
 
-#### Step 1: Build the Docker Image
+##### Step 1: Build the Docker Image
 ```bash
 docker build -t llm-orchestrator .
 ```
 
-#### Step 2: Initialize the Encrypted Vault
+##### Step 2: Initialize the Encrypted Vault
 Run the vault script to securely store your API keys. You will be prompted for your keys and a master password.
 ```bash
 docker run -it --rm -v "${PWD}:/app" llm-orchestrator python app/init_vault.py
 ```
 
-#### Step 3: Run the Orchestrator Service
+##### Step 3: Run the Orchestrator Service
 Run the container in detached mode, mapping the necessary ports and volumes.
 -   **On Linux/macOS/WSL:**
     ```bash

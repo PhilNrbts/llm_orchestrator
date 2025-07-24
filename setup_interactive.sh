@@ -66,17 +66,31 @@ echo
 # --- Completion ---
 echo -e "${GREEN}--- Setup Complete ---${NC}"
 echo
-echo "You are ready to go! Here are the final two steps:"
+echo "You are ready to go!"
 echo
-echo -e "${YELLOW}Step 1: Start the Server${NC}"
-echo "Copy the following command and run it in your terminal to start the service in the background:"
-echo
-echo -e "  docker run -d --name llm-engine -p 8000:8000 -v "\${PWD}/vault.enc:/vault.enc" -v "\${PWD}/models.yaml:/models.yaml" -v "\${PWD}/workspace:/workspace" --rm llm-orchestrator"
-echo
-echo -e "${YELLOW}Step 2: Test the Server${NC}"
-echo "After a few seconds, run the command below. ${RED}Remember to replace 'your-vault-password' with your actual password.${NC}"
-echo
-echo -e "  curl -X POST http://localhost:8000/query -H "Content-Type: application/json" -d '{\"prompt\": \"Hello\", \"password\": \"your-vault-password\", \"mode\": \"parallel\"}'"
-echo
+
+# --- Step 3: Run the Service ---
+read -p "$(echo -e ${YELLOW}ACTION:${NC} Would you like to start the LLM Orchestrator service now? (Y/n): )" response
+response=${response,,} # tolower
+if [[ "$response" =~ ^(yes|y|)$ ]]; then
+    echo "Starting the container in the background..."
+    docker run -d --name llm-engine -p 8000:8000 -v "${PWD}/vault.enc:/vault.enc" -v "${PWD}/models.yaml:/models.yaml" -v "${PWD}/workspace:/workspace" --rm llm-orchestrator
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Error: Failed to start the container. Please check the output above.${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}Service started successfully!${NC}"
+    echo
+    echo -e "${YELLOW}Next Step: Test the Server${NC}"
+    echo "After a few seconds, run the command below in your terminal."
+    echo -e "${RED}Remember to replace 'your-vault-password' with your actual password.${NC}"
+    echo
+    echo -e "  curl -X POST http://localhost:8000/query -H "Content-Type: application/json" -d '{"prompt": "Hello", "password": "your-vault-password", "mode": "parallel"}'"
+    echo
+else
+    echo "You can start the service later with the following command:"
+    echo -e "  docker run -d --name llm-engine -p 8000:8000 -v "\${PWD}/vault.enc:/vault.enc" -v "\${PWD}/models.yaml:/models.yaml" -v "\${PWD}/workspace:/workspace" --rm llm-orchestrator"
+    echo
+fi
 
 exit 0

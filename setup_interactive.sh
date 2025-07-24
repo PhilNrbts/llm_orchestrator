@@ -65,13 +65,18 @@ echo
 
 # --- Completion ---
 echo -e "${GREEN}--- Setup Complete ---${NC}"
-echo "You can now run the LLM Orchestrator service."
-echo "Use the following command to start the container in the background:"
 echo
-echo -e "  ${YELLOW}docker run -d --name llm-engine -p 8000:8000 -v \"\${PWD}/vault.enc:/vault.enc\" -v \"\${PWD}/models.yaml:/models.yaml\" -v \"\${PWD}/workspace:/workspace\" --rm llm-orchestrator${NC}"
+echo "You are ready to go! Here are the final two steps:"
 echo
-echo "You can then test it with a command like:"
-echo -e "  curl -X POST http://localhost:8000/query -H \"Content-Type: application/json\" -d '{\"prompt\": \"Hello\", \"password\": \"your-vault-password\", \"mode\": \"parallel\"}'"
+echo -e "${YELLOW}Step 1: Start the Server${NC}"
+echo "Copy the following command and run it in your terminal to start the service in the background:"
+echo
+echo -e "  docker run -d --name llm-engine -p 8000:8000 -v "\${PWD}/vault.enc:/vault.enc" -v "\${PWD}/models.yaml:/models.yaml" -v "\${PWD}/workspace:/workspace" --rm llm-orchestrator"
+echo
+echo -e "${YELLOW}Step 2: Test the Server${NC}"
+echo "After a few seconds, run the command below. ${RED}Remember to replace 'your-vault-password' with your actual password.${NC}"
+echo
+echo -e "  curl -X POST http://localhost:8000/query -H "Content-Type: application/json" -d '{\"prompt\": \"Hello\", \"password\": \"your-vault-password\", \"mode\": \"parallel\"}'"
 echo
 
 exit 0

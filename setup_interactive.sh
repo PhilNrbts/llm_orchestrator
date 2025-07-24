@@ -70,7 +70,8 @@ echo "You are ready to go!"
 echo
 
 # --- Step 3: Run the Service ---
-read -p "$(echo -e ${YELLOW}ACTION:${NC} Would you like to start the LLM Orchestrator service now? (Y/n): )" response
+echo -e "${YELLOW}ACTION:${NC} Would you like to start the LLM Orchestrator service now? (Y/n): "
+read -p "" response
 response=${response,,} # tolower
 if [[ "$response" =~ ^(yes|y|)$ ]]; then
     echo "Starting the container in the background..."

@@ -4,7 +4,7 @@ mistral:
   models:
     - name: mistral-small-latest
       max_tokens: 4096
-    - name: mistral-large-latest
+    - name: open-mixtral-8x7b
       max_tokens: 8192
   additional_configs:
     - temperature: 0.7

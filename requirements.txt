@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+pydantic
+python-multipart
+cryptography
+anthropic
+google-generativeai
+deepseek-api
+mistralai

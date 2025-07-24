@@ -97,10 +97,10 @@ class Chat:
         header_text = Text(f"LLM Orchestrator", justify="center", style="bold magenta")
         layout["header"].update(Panel(header_text))
 
-        chat_history = ""
+        chat_history_text = Text()
         for item in self.history:
-            chat_history += f"[bold cyan]{item['role']}:[/bold cyan] {item['content']}\n"
-        layout["body"].update(Panel(Text(chat_history), title="Chat History"))
+            chat_history_text.append(Text.from_markup(f"[bold cyan]{item['role']}:[/bold cyan] {item['content']}\n"))
+        layout["body"].update(Panel(chat_history_text, title="Chat History"))
 
         sidebar_text = "[bold]Commands:[/bold]\n" + "\n".join(self.commands.keys())
         layout["side"].update(Panel(sidebar_text, title="Info"))

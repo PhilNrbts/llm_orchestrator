@@ -26,8 +26,10 @@ theme:
 nav:
   - 'index.md'
   - 'Usage':
+    - 'Getting Started': 'usage/getting_started.md'
     - 'Installation': 'usage/installation.md'
     - 'Commands': 'usage/commands.md'
+    - 'Configuration': 'usage/configuration.md'
     - 'Chains': 'usage/chains.md'
   - 'About':
     - 'Core Concepts': 'about/core_concepts.md'

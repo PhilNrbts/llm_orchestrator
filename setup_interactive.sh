@@ -25,7 +25,8 @@ echo -e " ${GREEN}OK.${NC}"
 echo
 
 # --- Step 1: Build Docker Image ---
-read -p "$(echo -e ${YELLOW}ACTION:${NC} The Docker image 'llm-orchestrator' needs to be built. Build it now? (Y/n): )" response
+echo -e "${YELLOW}ACTION:${NC} The Docker image 'llm-orchestrator' needs to be built. Build it now? (Y/n): "
+read -p "" response
 response=${response,,} # tolower
 if [[ "$response" =~ ^(yes|y|)$ ]]; then
     echo "Building Docker image... (This may take a few minutes)"
@@ -41,7 +42,8 @@ fi
 echo
 
 # --- Step 2: Initialize Secure Vault ---
-read -p "$(echo -e ${YELLOW}ACTION:${NC} Do you want to set up the secure API key vault now? (Y/n): )" response
+echo -e "${YELLOW}ACTION:${NC} Do you want to set up the secure API key vault now? (Y/n): "
+read -p "" response
 response=${response,,} # tolower
 if [[ "$response" =~ ^(yes|y|)$ ]]; then
     echo "The next step will run an interactive script inside a temporary Docker container."

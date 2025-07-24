@@ -1,11 +1,3 @@
-# Configuration for LLM Providers and Models
-
-## Model Definitions
-
-Detailed configurations for each supported model provider are defined below.
-
-### Mistral
-
 mistral:
   api_key_name: MISTRAL_API_KEY
   default_model: mistral-7b
@@ -17,9 +9,6 @@ mistral:
   additional_configs:
     - temperature: 0.7
     - max_gen_tokens: 1024
-
-### DeepSeek
-
 deepseek:
   api_key_name: DEEPSEEK_API_KEY
   default_model: deepseek-chat
@@ -31,9 +20,6 @@ deepseek:
   additional_configs:
     - presence_penalty: 0.2
     - frequency_penalty: 0.2
-
-### Anthropic
-
 anthropic:
   api_key_name: ANTHROPIC_API_KEY
   default_model: claude-3-5-sonnet
@@ -45,7 +31,6 @@ anthropic:
   additional_configs:
     - temperature: 0.5
     - top_p: 1.0
-
 gemini:
   api_key_name: GEMINI_API_KEY
   default_model: gemini-1.5-flash-latest
@@ -58,7 +43,6 @@ gemini:
       temperature: 0.7
     - name: gemini-1.0-pro
       temperature: 0.7
-
 system_prompts:
   roles:
     - Critique

@@ -18,6 +18,15 @@ console = Console()
 CONFIG_PATH = "config.yaml"
 
 def load_config(file_path):
+    """
+    Load the configuration from a YAML file.
+
+    Args:
+        file_path (str): The path to the configuration file.
+
+    Returns:
+        dict: The configuration dictionary.
+    """
     try:
         with open(file_path, 'r') as f:
             return yaml.safe_load(f)
@@ -25,6 +34,13 @@ def load_config(file_path):
         return {"main_llm": {"provider": "gemini", "model": "gemini-1.5-flash-latest"}, "chains": {}}
 
 def save_config(data, file_path):
+    """
+    Save the configuration to a YAML file.
+
+    Args:
+        data (dict): The configuration dictionary to save.
+        file_path (str): The path to the configuration file.
+    """
     with open(file_path, 'w') as f:
         yaml.dump(data, f, default_flow_style=False)
 
@@ -141,6 +157,16 @@ cli.add_command(config)
 import getpass
 
 def get_password(password_option, no_mask=False):
+    """
+    Get the master password from the user.
+
+    Args:
+        password_option (str): The password provided as a command-line option.
+        no_mask (bool): Whether to disable password masking.
+
+    Returns:
+        str: The master password.
+    """
     if password_option:
         return password_option
     cached_password = get_password_from_session()
@@ -157,6 +183,15 @@ def get_password(password_option, no_mask=False):
         return sys.stdin.readline().strip()
 
 def parse_step(step_str: str):
+    """
+    Parse a step string into a dictionary.
+
+    Args:
+        step_str (str): The step string to parse.
+
+    Returns:
+        dict: The parsed step dictionary.
+    """
     match = re.match(r"^(?P<role>\w+)>/(?P<persona>\w+)\)-(?P<model>\w+)$", step_str)
     if not match:
         console.print(f"[bold red]Invalid step format:[/bold red] '{step_str}'.")

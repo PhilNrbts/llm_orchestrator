@@ -26,6 +26,13 @@ class CommandCompleter(Completer):
                         yield Completion(command, start_position=-len(text))
 
 class Chat:
+    """
+    The main class for the interactive chat.
+
+    Args:
+        main_llm_config (dict): The main LLM configuration.
+        password (str): The master password.
+    """
     def __init__(self, main_llm_config: dict, password: str):
         self.api_keys = get_api_keys(password)
         self.provider = main_llm_config['provider']
@@ -50,6 +57,7 @@ class Chat:
         self.command_completer = CommandCompleter(list(self.commands.keys()))
 
     def _update_client(self):
+        """Update the client based on the current provider and model."""
         provider_config = MODEL_CONFIG.get(self.provider)
         if not provider_config:
             raise ValueError(f"Provider '{self.provider}' not found in models.yaml")
@@ -74,6 +82,7 @@ class Chat:
         )
 
     def _make_layout(self) -> Layout:
+        """Create the layout for the chat UI."""
         layout = Layout(name="root")
         layout.split(
             Layout(name="header", size=3),
@@ -84,6 +93,7 @@ class Chat:
         return layout
 
     def _update_layout(self, layout: Layout):
+        """Update the layout with the current chat state."""
         header_text = Text(f"LLM Orchestrator", justify="center", style="bold magenta")
         layout["header"].update(Panel(header_text))
 
@@ -173,6 +183,7 @@ class Chat:
         self._update_client()
 
     def _ask_for_context(self):
+        """Ask the user if they want to provide the conversation history as context."""
         if self.history:
             self.carry_context = Prompt.ask(
                 f"Provide conversation history as context? (y/n)",
@@ -180,6 +191,15 @@ class Chat:
             ) == "y"
 
     def _prepare_prompt(self, prompt: str) -> str:
+        """
+        Prepare the prompt by optionally prepending the conversation history and system prompt.
+
+        Args:
+            prompt (str): The user's prompt.
+
+        Returns:
+            str: The prepared prompt.
+        """
         final_prompt = prompt
         if self.current_mode != "default":
             system_prompt = self.system_prompts.get('personas', {}).get(self.current_mode, "")
@@ -194,6 +214,7 @@ class Chat:
         return f"--- Conversation History ---\n{context}\n--- New Prompt ---\n{final_prompt}"
 
     async def start(self):
+        """Start the interactive chat session."""
         layout = self._make_layout()
         session = PromptSession(completer=self.command_completer, complete_while_typing=True)
         try:
@@ -228,6 +249,7 @@ class Chat:
             self.save_conversation()
 
     def save_conversation(self):
+        """Save the conversation to a timestamped file."""
         if not self.history:
             return
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")

@@ -29,7 +29,17 @@ MODEL_CONFIG = load_model_config()
 
 # --- Core Orchestration Logic ---
 async def parallel_query(prompt: str, api_keys: Dict[str, str], model_config: Dict[str, Any]) -> Dict[str, str]:
-    """Query specified models simultaneously."""
+    """
+    Query specified models simultaneously.
+
+    Args:
+        prompt (str): The prompt to send to the models.
+        api_keys (Dict[str, str]): The API keys for the models.
+        model_config (Dict[str, Any]): The configuration for the models to query.
+
+    Returns:
+        Dict[str, str]: A dictionary of responses from the models.
+    """
     tasks = []
     
     for model_id, config in model_config.items():
@@ -56,7 +66,17 @@ async def parallel_query(prompt: str, api_keys: Dict[str, str], model_config: Di
     return results
 
 async def sequential_refinement(prompt: str, api_keys: Dict[str, str], steps: List[Dict[str, str]]) -> List[Dict[str, str]]:
-    """Query models in a chain, with each step using a specific role and persona."""
+    """
+    Query models in a chain, with each step using a specific role and persona.
+
+    Args:
+        prompt (str): The initial prompt for the chain.
+        api_keys (Dict[str, str]): The API keys for the models.
+        steps (List[Dict[str, str]]): The steps in the chain.
+
+    Returns:
+        List[Dict[str, str]]: The conversation history of the chain.
+    """
     conversation = [{"role": "user", "content": prompt}]
     current_prompt = prompt
     
@@ -98,7 +118,12 @@ async def sequential_refinement(prompt: str, api_keys: Dict[str, str], steps: Li
 
 
 def get_system_prompts() -> Dict[str, str]:
-    """Load system prompts from the models YAML file."""
+    """
+    Load system prompts from the models YAML file.
+
+    Returns:
+        Dict[str, str]: A dictionary of system prompts.
+    """
     try:
         with open(MODELS_CONFIG_PATH, 'r') as f:
             config = yaml.safe_load(f)

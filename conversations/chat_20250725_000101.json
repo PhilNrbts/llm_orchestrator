@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "q"
+  },
+  {
+    "role": "gemini/gemini-1.5-flash-latest",
+    "content": "Please provide me with a question or prompt.  I need more information to give you an answer.\n"
+  }
+]

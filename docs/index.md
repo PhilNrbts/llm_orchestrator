@@ -1,9 +1,10 @@
 # Welcome to the LLM Orchestrator CLI
 
-The LLM Orchestrator is a powerful, local-first command-line tool designed for developers, researchers, and writers who need to interact with multiple Large Language Models (LLMs) efficiently. It provides a secure and flexible way to run parallel queries, create complex sequential chains, and manage common workflows directly from your terminal.
+The LLM Orchestrator is a powerful, local-first command-line tool designed for developers, researchers, and writers who need to interact with multiple Large Language Models (LLMs) efficiently. It provides a secure and flexible way to run queries and manage workflows directly from your terminal.
 
 ## Key Features
 
+- **Interactive Chat**: The primary way to use the application. A rich terminal UI with a command dropdown, chat history, and model details.
 - **Secure API Key Management**: Your API keys are encrypted locally in a `vault.enc` file. A master password decrypts them in memory only when needed.
 - **Parallel Queries**: Send a single prompt to multiple models (like Gemini, Anthropic, etc.) at the same time and compare their responses side-by-side.
 - **On-the-Fly Chains**: Construct powerful, sequential workflows directly on the command line. Use the output of one model as the input for the next, with custom roles and personas for each step.

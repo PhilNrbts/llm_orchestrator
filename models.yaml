@@ -17,6 +17,10 @@ gemini:
       temperature: 0.7
     - name: gemini-1.5-pro-latest
       temperature: 0.7
+    - name: gemini-pro
+      temperature: 0.7
+    - name: gemini-1.0-pro
+      temperature: 0.7
 
 deepseek:
   api_key_name: DEEPSEEK_API_KEY

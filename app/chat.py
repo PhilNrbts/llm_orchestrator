@@ -2,14 +2,28 @@ import os
 import json
 import datetime
 from rich.console import Console
-from rich.prompt import Prompt
 from rich.layout import Layout
 from rich.panel import Panel
 from rich.text import Text
+from rich.prompt import Prompt
+from prompt_toolkit import PromptSession
+from prompt_toolkit.completion import Completer, Completion
 from app.orchestrator import get_client, MODEL_CONFIG, get_system_prompts
 from app.key_management import get_api_keys
 
 console = Console()
+
+class CommandCompleter(Completer):
+    def __init__(self, commands):
+        self.commands = commands
+
+    def get_completions(self, document, complete_event):
+        text = document.text_before_cursor.lower()
+        if text.startswith('/'):
+            if ' ' not in text:
+                for command in self.commands:
+                    if command.startswith(text):
+                        yield Completion(command, start_position=-len(text))
 
 class Chat:
     def __init__(self, main_llm_config: dict, password: str):
@@ -20,6 +34,7 @@ class Chat:
         self.carry_context = False
         self.system_prompts = get_system_prompts()
         self.current_mode = "default"
+        self.should_exit = False
         self._update_client()
 
         self.commands = {
@@ -29,7 +44,10 @@ class Chat:
             "/list": self._list_models,
             "/config": self._show_config,
             "/mode": self._handle_mode_change,
+            "/exit": self._handle_exit,
+            "/quit": self._handle_exit,
         }
+        self.command_completer = CommandCompleter(list(self.commands.keys()))
 
     def _update_client(self):
         provider_config = MODEL_CONFIG.get(self.provider)
@@ -82,12 +100,17 @@ class Chat:
         return layout
 
     def _show_help(self):
+        """Show available commands."""
         console.print("\n[bold yellow]Available commands:[/bold yellow]")
-        for command in self.commands:
-            console.print(f"  [bold]{command}[/bold]")
-        console.print("  [bold]exit/quit[/bold]")
+        for command, func in self.commands.items():
+            console.print(f"  [bold]{command}[/bold] - {func.__doc__}")
+
+    def _handle_exit(self):
+        """Exit the chat."""
+        self.should_exit = True
 
     def _handle_change_provider(self):
+        """Change the provider."""
         console.print("\n[bold yellow]Available providers:[/bold yellow]")
         providers = list(MODEL_CONFIG.keys())
         for i, p in enumerate(providers, 1):
@@ -106,6 +129,7 @@ class Chat:
         self._update_client()
 
     def _handle_change_model(self):
+        """Change the model."""
         console.print(f"\n[bold yellow]Available models for {self.provider}:[/bold yellow]")
         models = [m['name'] for m in MODEL_CONFIG[self.provider]['models']]
         for i, m in enumerate(models, 1):
@@ -123,18 +147,21 @@ class Chat:
         self._update_client()
 
     def _list_models(self):
+        """List available models for the current provider."""
         console.print(f"\n[bold yellow]Available models for {self.provider}:[/bold yellow]")
         models = [m['name'] for m in MODEL_CONFIG[self.provider]['models']]
         for model in models:
             console.print(f"  - {model}")
 
     def _show_config(self):
+        """Show the current configuration."""
         console.print("\n[bold yellow]Current Configuration:[/bold yellow]")
         console.print(f"  - Provider: {self.provider}")
         console.print(f"  - Model: {self.model_name}")
         console.print(f"  - Mode: {self.current_mode}")
 
     def _handle_mode_change(self):
+        """Change the chat mode."""
         console.print("\n[bold yellow]Available modes:[/bold yellow]")
         modes = ["default"] + self.system_prompts.get('personas', [])
         for i, mode in enumerate(modes, 1):
@@ -168,27 +195,26 @@ class Chat:
 
     async def start(self):
         layout = self._make_layout()
+        session = PromptSession(completer=self.command_completer, complete_while_typing=True)
         try:
-            while True:
+            while not self.should_exit:
                 console.clear()
                 console.print(self._update_layout(layout))
-                prompt = Prompt.ask("\n> ")
+                prompt = await session.prompt_async("\n> ")
 
                 if prompt.lower() in ["exit", "quit"]:
                     break
                 
                 if prompt.startswith("/"):
-                    if prompt.lower() == "/help":
-                        self._show_help()
-                        Prompt.ask("Press Enter to continue...")
-                        continue
-
-                    command = self.commands.get(prompt.lower())
+                    command_text = prompt.lower()
+                    command = self.commands.get(command_text)
                     if command:
                         command()
+                        if not self.should_exit:
+                            await session.prompt_async("Press Enter to continue...")
                     else:
                         console.print("[bold red]Unknown command. Type /help for a list of commands.[/bold red]")
-                        Prompt.ask("Press Enter to continue...")
+                        await session.prompt_async("Press Enter to continue...")
                     continue
 
                 final_prompt = self._prepare_prompt(prompt)

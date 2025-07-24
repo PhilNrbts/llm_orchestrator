@@ -447,6 +447,30 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#interactive-chat" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interactive Chat
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interactive Chat">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slash-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Slash Commands
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#run" class="md-nav__link">
     <span class="md-ellipsis">
       run
@@ -492,15 +516,6 @@
   <a href="#auth" class="md-nav__link">
     <span class="md-ellipsis">
       auth
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#install-completion" class="md-nav__link">
-    <span class="md-ellipsis">
-      install-completion
     </span>
   </a>
   
@@ -659,34 +674,46 @@
 
 <h1 id="commands">Commands</h1>
 <p>The CLI is organized into several command groups. You can always get more information about a command by using the <code>--help</code> flag.</p>
+<h2 id="interactive-chat">Interactive Chat</h2>
+<p>The primary way to use the application is through the interactive chat. To start the chat, simply run the application without any commands:</p>
+<pre><code class="language-bash">llm-orchestrator
+</code></pre>
+<h3 id="slash-commands">Slash Commands</h3>
+<p>The interactive chat has a number of slash commands to control the application:</p>
+<ul>
+<li><code>/help</code>: Show a list of available commands.</li>
+<li><code>/changemodel</code>: Change the model used in the chat.</li>
+<li><code>/changeprovider</code>: Change the provider used in the chat.</li>
+<li><code>/list</code>: List the available models for the current provider.</li>
+<li><code>/config</code>: Show the current configuration.</li>
+<li><code>/mode</code>: Change the chat mode.</li>
+<li><code>/exit</code> or <code>/quit</code>: Exit the chat.</li>
+</ul>
 <h2 id="run"><code>run</code></h2>
-<p>The <code>run</code> command is the primary way to execute queries.</p>
+<p>The <code>run</code> command is a secondary way to execute queries.</p>
 <h3 id="parallel-queries">Parallel Queries</h3>
 <p>To send a prompt to multiple models at once, use the <code>--model</code> flag:</p>
-<pre><code class="language-bash">my-cli run -p &quot;What is the future of AI?&quot; --model gemini --model anthropic
+<pre><code class="language-bash">llm-orchestrator run -p &quot;What is the future of AI?&quot; --model gemini --model anthropic
 </code></pre>
 <h3 id="sequential-chains-on-the-fly">Sequential Chains (On-the-Fly)</h3>
 <p>To create a chain of queries, use the <code>--step</code> flag. The format is <code>Role&gt;/Persona)-Model</code>.</p>
-<pre><code class="language-bash">my-cli run -p &quot;Write a python function for fibonacci&quot; \
+<pre><code class="language-bash">llm-orchestrator run -p &quot;Write a python function for fibonacci&quot; \
     --step &quot;GenerateCode&gt;/Developer)-gemini&quot; \
     --step &quot;Critique&gt;/Tester)-anthropic&quot;
 </code></pre>
 <h2 id="chain"><code>chain</code></h2>
 <p>The <code>chain</code> command group lets you manage saved workflows.</p>
 <ul>
-<li><code>my-cli chain list</code>: Lists all chains saved in <code>config.yaml</code>.</li>
-<li><code>my-cli chain run &lt;chain_name&gt; -p "Your prompt"</code>: Executes a saved chain.</li>
-<li><code>my-cli chain save &lt;chain_name&gt; --step "..."</code>: Saves a new chain.</li>
+<li><code>llm-orchestrator chain list</code>: Lists all chains saved in <code>config.yaml</code>.</li>
+<li><code>llm-orchestrator chain run &lt;chain_name&gt; -p "Your prompt"</code>: Executes a saved chain.</li>
+<li><code>llm-orchestrator chain save &lt;chain_name&gt; --step "..."</code>: Saves a new chain.</li>
 </ul>
 <h2 id="auth"><code>auth</code></h2>
 <p>The <code>auth</code> command group manages password sessions.</p>
 <ul>
-<li><code>my-cli auth start</code>: Starts a 15-minute session where you don't need to re-enter your password.</li>
-<li><code>my-cli auth stop</code>: Ends the current session.</li>
+<li><code>llm-orchestrator auth start</code>: Starts a 15-minute session where you don't need to re-enter your password.</li>
+<li><code>llm-orchestrator auth stop</code>: Ends the current session.</li>
 </ul>
-<h2 id="install-completion"><code>install-completion</code></h2>
-<p>This command helps you set up shell autocompletion. See the <a href="../installation/">Installation</a> guide for details.</p>
-<p>```</p>
 
 
 

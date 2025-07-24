@@ -424,36 +424,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-clone-the-repository" class="md-nav__link">
+  <a href="#1-install-poetry" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Clone the Repository
+      1. Install Poetry
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-install-dependencies" class="md-nav__link">
+  <a href="#2-clone-the-repository" class="md-nav__link">
     <span class="md-ellipsis">
-      2. Install Dependencies
+      2. Clone the Repository
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-set-up-the-api-key-vault" class="md-nav__link">
+  <a href="#3-install-dependencies" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Set Up the API Key Vault
+      3. Install Dependencies
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-optional-install-shell-completion" class="md-nav__link">
+  <a href="#4-set-up-the-api-key-vault" class="md-nav__link">
     <span class="md-ellipsis">
-      4. (Optional) Install Shell Completion
+      4. Set Up the API Key Vault
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-optional-install-shell-completion" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. (Optional) Install Shell Completion
     </span>
   </a>
   
@@ -634,47 +643,44 @@
 
 
 <h1 id="installation">Installation</h1>
-<p>Getting the LLM Orchestrator CLI running on your system is straightforward.</p>
-<h2 id="1-clone-the-repository">1. Clone the Repository</h2>
-<p>First, clone the project repository from GitHub:</p>
+<p>This project is managed with <a href="https://python-poetry.org/">Poetry</a>, which handles dependency management and virtual environments automatically.</p>
+<h2 id="1-install-poetry">1. Install Poetry</h2>
+<p>First, if you don't have Poetry, install it by following the <a href="https://python-poetry.org/docs/#installation">official instructions</a>.</p>
+<h2 id="2-clone-the-repository">2. Clone the Repository</h2>
+<p>Clone the project repository from GitHub:</p>
 <pre><code class="language-bash">git clone https://github.com/your-username/llm_orchestrator.git
 cd llm_orchestrator
 </code></pre>
-<h2 id="2-install-dependencies">2. Install Dependencies</h2>
-<p>The project uses Python and a set of libraries defined in <code>requirements.txt</code>. It's highly recommended to use a virtual environment.</p>
-<pre><code class="language-bash"># Create and activate a virtual environment (optional but recommended)
-python -m venv .venv
-source .venv/bin/activate
-
-# Install the required packages
-pip install -r requirements.txt
+<h2 id="3-install-dependencies">3. Install Dependencies</h2>
+<p>Poetry will read the <code>pyproject.toml</code> file, create a virtual environment, and install all necessary dependencies with a single command:</p>
+<pre><code class="language-bash">poetry install
 </code></pre>
-<h2 id="3-set-up-the-api-key-vault">3. Set Up the API Key Vault</h2>
-<p>Your LLM API keys are stored securely in an encrypted vault. To initialize the vault and add your keys, run the interactive setup script:</p>
-<pre><code class="language-bash">python -m scripts.init_vault
+<h2 id="4-set-up-the-api-key-vault">4. Set Up the API Key Vault</h2>
+<p>Your LLM API keys are stored securely in an encrypted vault. To initialize the vault and add your keys, run the settings manager:</p>
+<pre><code class="language-bash">poetry run python settings.py
 </code></pre>
-<p>The script will prompt you for your master password and then for each API key you wish to add.</p>
-<h2 id="4-optional-install-shell-completion">4. (Optional) Install Shell Completion</h2>
+<p>Select <strong>[1] Initialize a new vault</strong> and follow the prompts.</p>
+<h2 id="5-optional-install-shell-completion">5. (Optional) Install Shell Completion</h2>
 <p>For a much better user experience, install the shell completion script. This will enable tab-completion for commands, options, and even chain names.</p>
-<p>Run the following command for your shell:</p>
+<p>Run the following command for your shell (using <code>poetry run</code>):</p>
 <p>=== "Bash"
     <code>bash
-    my-cli install-completion --shell bash</code>
+    poetry run python -m app.main install-completion --shell bash</code>
     Then add this to your <code>~/.bashrc</code>:
     <code>bash
-    eval "$(_MY-CLI_COMPLETE=bash_source my-cli)"</code></p>
+    eval "$(_LLM_ORCHESTRATOR_CLI_COMPLETE=bash_source llm-orchestrator-cli)"</code></p>
 <p>=== "Zsh"
     <code>bash
-    my-cli install-completion --shell zsh</code>
+    poetry run python -m app.main install-completion --shell zsh</code>
     Then add this to your <code>~/.zshrc</code>:
     <code>bash
-    eval "$(_MY-CLI_COMPLETE=zsh_source my-cli)"</code></p>
+    eval "$(_LLM_ORCHESTRATOR_CLI_COMPLETE=zsh_source llm-orchestrator-cli)"</code></p>
 <p>=== "Fish"
     <code>bash
-    my-cli install-completion --shell fish</code>
+    poetry run python -m app.main install-completion --shell fish</code>
     Then add this to your <code>~/.config/fish/config.fish</code>:
     <code>bash
-    eval (env _MY-CLI_COMPLETE=fish_source my-cli)</code></p>
+    eval (env _LLM_ORCHESTRATOR_CLI_COMPLETE=fish_source llm-orchestrator-cli)</code></p>
 <p>After updating your shell's configuration file, restart your shell for the changes to take effect.</p>
 
 

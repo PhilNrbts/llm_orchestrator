@@ -19,6 +19,7 @@ mistralai = "^1.9.3"
 pyyaml = "^6.0.2"
 mkdocs = "^1.6.1"
 mkdocs-material = "^9.6.15"
+prompt-toolkit = "^3.0.51"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.1"

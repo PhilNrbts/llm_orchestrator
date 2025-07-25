@@ -45,48 +45,48 @@ from app.tools.base import BaseTool
 class WeatherTool(BaseTool):
     """
     A simple weather tool that simulates fetching weather data.
-    
+
     Required inputs:
     - location: The location to get weather for (string)
-    
+
     Optional inputs:
     - units: Temperature units ('celsius' or 'fahrenheit', default: 'celsius')
     """
-    
+
     def validate_inputs(self, **kwargs) -> None:
         """Validate that required inputs are provided."""
         if 'location' not in kwargs:
             raise ValueError("Weather tool requires 'location' parameter")
-        
+
         if not isinstance(kwargs['location'], str):
             raise ValueError("Location must be a string")
-        
+
         # Validate optional units parameter
         units = kwargs.get('units', 'celsius')
         if units not in ['celsius', 'fahrenheit']:
             raise ValueError("Units must be 'celsius' or 'fahrenheit'")
-    
+
     def execute(self, **kwargs) -> Dict[str, Any]:
         """
         Execute the weather tool.
-        
+
         Args:
             location: Location to get weather for
             units: Temperature units (optional)
-            
+
         Returns:
             Dict containing weather information
         """
         # Validate inputs first
         self.validate_inputs(**kwargs)
-        
+
         location = kwargs['location']
         units = kwargs.get('units', 'celsius')
-        
+
         # Simulate API call with random weather data
         conditions = ['sunny', 'cloudy', 'rainy', 'partly cloudy', 'windy']
         condition = random.choice(conditions)
-        
+
         # Generate temperature based on units
         if units == 'celsius':
             temperature = random.randint(-10, 35)
@@ -94,10 +94,10 @@ class WeatherTool(BaseTool):
         else:
             temperature = random.randint(14, 95)
             temp_symbol = '°F'
-        
+
         # Create weather report
         weather_report = f"Weather in {location}: {condition}, {temperature}{temp_symbol}"
-        
+
         return {
             "output": weather_report,
             "provider": "weather-api-simulator",
@@ -141,20 +141,20 @@ TOOL_REGISTRY = {
 def get_tool(tool_name: str) -> BaseTool:
     """
     Get a tool instance by name.
-    
+
     Args:
         tool_name: Name of the tool to get
-        
+
     Returns:
         Tool instance
-        
+
     Raises:
         ValueError: If tool is not found
     """
     if tool_name not in TOOL_REGISTRY:
         available_tools = list(TOOL_REGISTRY.keys())
         raise ValueError(f"Tool '{tool_name}' not found. Available tools: {available_tools}")
-    
+
     tool_class = TOOL_REGISTRY[tool_name]
     return tool_class()
 ```
@@ -169,14 +169,14 @@ workflows:
     params:
       - location
       - units  # optional parameter
-    
+
     steps:
       - name: get_weather
         tool: weather
         inputs:
           location: "{{params.location}}"
           units: "{{params.units}}"
-      
+
       - name: generate_summary
         tool: model_call
         inputs:
@@ -189,20 +189,20 @@ workflows:
   weather_with_advice:
     params:
       - location
-    
+
     steps:
       - name: get_current_weather
         tool: weather
         inputs:
           location: "{{params.location}}"
           units: "celsius"
-      
+
       - name: generate_advice
         tool: model_call
         inputs:
           prompt: |
             Weather: {{memory.get_current_weather_output}}
-            
+
             Provide clothing and activity recommendations based on this weather.
         memory:
           needs: ["tool_output(get_current_weather)"]
@@ -222,15 +222,15 @@ from app.tools.weather import WeatherTool
 
 def test_weather_tool():
     tool = WeatherTool()
-    
+
     # Test basic functionality
     result = tool.execute(location="San Francisco")
     print(f"Weather result: {result}")
-    
+
     # Test with units
     result = tool.execute(location="London", units="fahrenheit")
     print(f"Weather result: {result}")
-    
+
     # Test validation
     try:
         tool.execute()  # Missing location - should fail
@@ -272,10 +272,10 @@ class RealWeatherTool(BaseTool):
         self.api_key = api_key or os.getenv('WEATHER_API_KEY')
         if not self.api_key:
             raise ValueError("Weather API key required")
-    
+
     def execute(self, **kwargs) -> Dict[str, Any]:
         location = kwargs.get('location')
-        
+
         response = requests.get(
             f"https://api.openweathermap.org/data/2.5/weather",
             params={
@@ -284,12 +284,12 @@ class RealWeatherTool(BaseTool):
                 'units': 'metric'
             }
         )
-        
+
         if response.status_code != 200:
             raise Exception(f"Weather API error: {response.status_code}")
-        
+
         data = response.json()
-        
+
         return {
             "output": f"Weather in {location}: {data['weather'][0]['description']}, {data['main']['temp']}°C",
             "provider": "openweathermap",
@@ -308,7 +308,7 @@ class ConfigurableTool(BaseTool):
     def __init__(self, config_path: str = "tool_config.yaml"):
         with open(config_path) as f:
             self.config = yaml.safe_load(f)
-    
+
     def execute(self, **kwargs) -> Dict[str, Any]:
         # Use self.config in your tool logic
         pass
@@ -322,13 +322,13 @@ Tools can access the memory system:
 class MemoryAwareTool(BaseTool):
     def __init__(self, memory_manager=None):
         self.memory_manager = memory_manager
-    
+
     def execute(self, **kwargs) -> Dict[str, Any]:
         if self.memory_manager:
             # Access previous workflow context
             context = self.memory_manager.get_workflow_summary()
             # Use context in your tool logic
-        
+
         return {"output": "Tool result with memory context"}
 ```
 
@@ -366,24 +366,24 @@ Document your tools well:
 class WellDocumentedTool(BaseTool):
     """
     Brief description of what the tool does.
-    
+
     Required Inputs:
     - param1 (str): Description of param1
     - param2 (int): Description of param2
-    
+
     Optional Inputs:
     - param3 (bool): Description of param3 (default: False)
-    
+
     Output Format:
     {
         "output": "Main tool result",
         "metadata": {"additional": "information"}
     }
-    
+
     Examples:
         Basic usage:
         tool.execute(param1="value", param2=42)
-        
+
         With optional parameter:
         tool.execute(param1="value", param2=42, param3=True)
     """
@@ -400,16 +400,16 @@ from app.tools.your_tool import YourTool
 class TestYourTool:
     def setup_method(self):
         self.tool = YourTool()
-    
+
     def test_basic_execution(self):
         result = self.tool.execute(param1="test")
         assert "output" in result
         assert result["output"] is not None
-    
+
     def test_input_validation(self):
         with pytest.raises(ValueError):
             self.tool.execute()  # Missing required param
-    
+
     def test_error_handling(self):
         # Test how tool handles errors
         pass
@@ -432,28 +432,28 @@ from app.tools.base import BaseTool
 class TextProcessorTool(BaseTool):
     """
     Tool for processing text files with various operations.
-    
+
     Supports operations: read, write, append, word_count, line_count
     """
-    
+
     def validate_inputs(self, **kwargs) -> None:
         operation = kwargs.get('operation')
         if not operation:
             raise ValueError("operation parameter is required")
-        
+
         valid_operations = ['read', 'write', 'append', 'word_count', 'line_count']
         if operation not in valid_operations:
             raise ValueError(f"operation must be one of: {valid_operations}")
-        
+
         if 'file_path' not in kwargs:
             raise ValueError("file_path parameter is required")
-    
+
     def execute(self, **kwargs) -> Dict[str, Any]:
         self.validate_inputs(**kwargs)
-        
+
         operation = kwargs['operation']
         file_path = Path(kwargs['file_path'])
-        
+
         try:
             if operation == 'read':
                 content = file_path.read_text()
@@ -463,7 +463,7 @@ class TextProcessorTool(BaseTool):
                     "file_path": str(file_path),
                     "file_size": len(content)
                 }
-            
+
             elif operation == 'write':
                 content = kwargs.get('content', '')
                 file_path.write_text(content)
@@ -473,7 +473,7 @@ class TextProcessorTool(BaseTool):
                     "file_path": str(file_path),
                     "bytes_written": len(content)
                 }
-            
+
             elif operation == 'word_count':
                 content = file_path.read_text()
                 word_count = len(content.split())
@@ -483,9 +483,9 @@ class TextProcessorTool(BaseTool):
                     "file_path": str(file_path),
                     "word_count": word_count
                 }
-            
+
             # Add other operations...
-            
+
         except FileNotFoundError:
             return {
                 "output": f"File not found: {file_path}",

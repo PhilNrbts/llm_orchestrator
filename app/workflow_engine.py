@@ -13,7 +13,9 @@ class WorkflowEngine:
     Main workflow engine that coordinates configuration loading and workflow execution.
     """
 
-    def __init__(self, config_path: str = "config.yaml", vault_password: Optional[str] = None):
+    def __init__(
+        self, config_path: str = "config.yaml", vault_password: Optional[str] = None
+    ):
         """
         Initialize the workflow engine with configuration validation.
 
@@ -24,10 +26,10 @@ class WorkflowEngine:
         self.config_path = config_path
         self.config: Optional[Config] = None
         self.vault_password = vault_password
-        
+
         # Initialize memory manager
         self.memory_manager = MemoryManager()
-        
+
         # Initialize executor with memory manager
         self.executor = WorkflowExecutor(vault_password, self.memory_manager)
 

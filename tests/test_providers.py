@@ -1,5 +1,5 @@
 import pytest
-import asyncio
+
 from app.clients import get_client
 from app.key_management import get_api_keys
 from app.orchestrator import load_model_config
@@ -12,7 +12,8 @@ ALL_MODELS = []
 for provider, config in MODEL_CONFIG.items():
     if provider != "system_prompts":
         for model in config.get("models", []):
-            ALL_MODELS.append((provider, model['name']))
+            ALL_MODELS.append((provider, model["name"]))
+
 
 @pytest.mark.parametrize("provider, model_name", ALL_MODELS)
 @pytest.mark.asyncio
@@ -23,6 +24,7 @@ async def test_provider_model_generation(provider, model_name):
     # This test requires a master password to be set as an environment variable
     # for non-interactive testing.
     import os
+
     password = os.environ.get("MASTER_PASSWORD")
     if not password:
         pytest.skip("MASTER_PASSWORD environment variable not set.")
@@ -33,19 +35,21 @@ async def test_provider_model_generation(provider, model_name):
     api_key = api_keys.get(api_key_name)
 
     if not api_key:
-        pytest.fail(f"API key '{api_key_name}' not found in vault for provider '{provider}'.")
+        pytest.fail(
+            f"API key '{api_key_name}' not found in vault for provider '{provider}'."
+        )
 
-    model_details = next((m for m in provider_config['models'] if m['name'] == model_name), None)
+    model_details = next(
+        (m for m in provider_config["models"] if m["name"] == model_name), None
+    )
     if not model_details:
         pytest.fail(f"Model '{model_name}' not found for provider '{provider}'.")
 
     model_config_for_client = model_details.copy()
-    model_config_for_client['model'] = model_name
+    model_config_for_client["model"] = model_name
 
     client = get_client(
-        client_name=provider,
-        api_key=api_key,
-        model_config=model_config_for_client
+        client_name=provider, api_key=api_key, model_config=model_config_for_client
     )
 
     prompt = "hello"

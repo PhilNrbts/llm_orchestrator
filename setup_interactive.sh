@@ -51,7 +51,7 @@ if [[ "$response" =~ ^(yes|y|)$ ]]; then
     echo "Your password is never stored, and the keys are saved in an encrypted 'vault.enc' file."
     echo
     read -p "Press [Enter] to continue..."
-    
+
     docker run -it --rm --entrypoint python -v "${PWD}:/app" -w /app llm-orchestrator app/init_vault.py
     if [ $? -ne 0 ]; then
         echo -e "${RED}Error: Vault initialization failed or was cancelled.${NC}"
@@ -75,24 +75,23 @@ read -p "" response
 response=${response,,} # tolower
 if [[ "$response" =~ ^(yes|y|)$ ]]; then
     echo "Starting the container in the background..."
-    docker run -d --name llm-engine -p 8000:8000 -v "${PWD}/vault.enc:/vault.enc" -v "${PWD}/models.yaml:/models.yaml" -v "${PWD}/workspace:/workspace" --rm llm-orchestrator
+    docker run -d --name llm-engine -v "${PWD}/vault.enc:/vault.enc" -v "${PWD}/models.yaml:/models.yaml" -v "${PWD}/workspace:/workspace" --rm llm-orchestrator
     if [ $? -ne 0 ]; then
         echo -e "${RED}Error: Failed to start the container. Please check the output above.${NC}"
         exit 1
     fi
     echo -e "${GREEN}Service started successfully!${NC}"
     echo
-    echo -e "${YELLOW}Next Step: Test the Server${NC}"
-    echo "After a few seconds, run the command below in your terminal."
-    echo -e "${RED}Remember to replace 'your-vault-password' with your actual password.${NC}"
+    echo -e "${YELLOW}Next Step: Use the CLI${NC}"
+    echo "You can now use the LLM Orchestrator CLI. Try running:"
     echo
     cat <<'EOF'
-  curl -X POST http://localhost:8000/query -H "Content-Type: application/json" -d '{"prompt": "Hello", "password": "your-vault-password", "mode": "parallel"}'
+  docker exec -it llm-engine python -m app.main --help
 EOF
     echo
 else
     echo "You can start the service later with the following command:"
-    echo -e "  docker run -d --name llm-engine -p 8000:8000 -v "\${PWD}/vault.enc:/vault.enc" -v "\${PWD}/models.yaml:/models.yaml" -v "\${PWD}/workspace:/workspace" --rm llm-orchestrator"
+    echo -e "  docker run -d --name llm-engine -v "\${PWD}/vault.enc:/vault.enc" -v "\${PWD}/models.yaml:/models.yaml" -v "\${PWD}/workspace:/workspace" --rm llm-orchestrator"
     echo
 fi
 

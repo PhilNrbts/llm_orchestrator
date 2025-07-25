@@ -24,7 +24,7 @@ For full documentation, please see the `docs/` directory.
 
 ## Roadmap
 
-The future plans for this project are outlined in the [ROADMAP.md](ROADMAP.md) file.
+The future plans for this project are outlined in the [ROADMAP.md](docs/ROADMAP.md) file.
 
 ---
 # Project Summary
@@ -189,7 +189,7 @@ For full documentation, please see the `docs/` directory.
 
 ## Roadmap
 
-The future plans for this project are outlined in the [ROADMAP.md](ROADMAP.md) file.
+The future plans for this project are outlined in the [ROADMAP.md](docs/ROADMAP.md) file.
 
 ---
 

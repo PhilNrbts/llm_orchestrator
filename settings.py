@@ -1,10 +1,12 @@
-import click
 import subprocess
 import sys
+
+import click
 from rich.console import Console
 from rich.prompt import Prompt
 
 console = Console()
+
 
 def run_script(script_name, args=None):
     """Runs a Python script as a module, with optional arguments."""
@@ -15,9 +17,14 @@ def run_script(script_name, args=None):
         subprocess.run(command, check=True)
     except subprocess.CalledProcessError:
         # The error is printed within the called script, so we just note that it failed.
-        console.print(f"\n[bold red]The script '{script_name}' exited with an error.[/bold red]")
+        console.print(
+            f"\n[bold red]The script '{script_name}' exited with an error.[/bold red]"
+        )
     except FileNotFoundError:
-        console.print(f"\n[bold red]Error:[/bold red] Could not find the Python interpreter '{sys.executable}'.")
+        console.print(
+            f"\n[bold red]Error:[/bold red] Could not find the Python interpreter '{sys.executable}'."
+        )
+
 
 @click.command()
 def settings():
@@ -33,19 +40,20 @@ def settings():
 
         choice = Prompt.ask("Choose an option", default="q").lower()
 
-        if choice == '1':
+        if choice == "1":
             run_script("scripts.init_vault")
-        elif choice == '2':
+        elif choice == "2":
             run_script("scripts.vault_manager")
-        elif choice == '3':
+        elif choice == "3":
             # We can't truly export variables to the parent shell,
             # so we call a function within the vault manager to *display* the commands.
             run_script("scripts.vault_manager", args=["display-keys"])
-        elif choice == 'q':
+        elif choice == "q":
             console.print("Exiting settings.")
             break
         else:
             console.print("[bold red]Invalid choice, please try again.[/bold red]")
+
 
 if __name__ == "__main__":
     settings()

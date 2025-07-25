@@ -110,11 +110,15 @@ class WorkflowExecutor:
                             "name": step.name,
                             "tool": step.tool,
                             "inputs": step.inputs,
-                            "memory": getattr(step, 'memory', {})
+                            "memory": getattr(step, "memory", {}),
                         }
-                        memory_context = self.memory_manager.fetch_context_for_step(step_config)
+                        memory_context = self.memory_manager.fetch_context_for_step(
+                            step_config
+                        )
                         if memory_context:
-                            console.print(f"🧠 Memory context loaded: {list(memory_context.keys())}")
+                            console.print(
+                                f"🧠 Memory context loaded: {list(memory_context.keys())}"
+                            )
 
                     # Inject memory context into inputs BEFORE resolving templates
                     inputs_with_memory = step.inputs

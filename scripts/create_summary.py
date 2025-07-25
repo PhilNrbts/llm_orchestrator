@@ -1,7 +1,6 @@
-
-
-import os
 import glob
+import os
+
 
 def create_summary(root_path):
     """
@@ -12,8 +11,8 @@ def create_summary(root_path):
     architecture_docs = []
     other_docs = []
 
-    for md_file in glob.glob(os.path.join(root_path, '**/*.md'), recursive=True):
-        if 'architecture' in md_file:
+    for md_file in glob.glob(os.path.join(root_path, "**/*.md"), recursive=True):
+        if "architecture" in md_file:
             architecture_docs.append(md_file)
         else:
             other_docs.append(md_file)
@@ -23,7 +22,7 @@ def create_summary(root_path):
 
     for doc in sorted(architecture_docs):
         summary.append(f"### {os.path.basename(doc)}")
-        with open(doc, 'r') as f:
+        with open(doc) as f:
             summary.append(f.read())
         summary.append("\n---\n")
 
@@ -31,17 +30,16 @@ def create_summary(root_path):
 
     for doc in sorted(other_docs):
         summary.append(f"### {os.path.basename(doc)}")
-        with open(doc, 'r') as f:
+        with open(doc) as f:
             summary.append(f.read())
         summary.append("\n---\n")
 
     return "\n".join(summary)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     summary_content = create_summary(project_root)
-    with open(os.path.join(project_root, 'project_summary.md'), 'w') as f:
+    with open(os.path.join(project_root, "project_summary.md"), "w") as f:
         f.write(summary_content)
     print("Project summary created at project_summary.md")
-
-

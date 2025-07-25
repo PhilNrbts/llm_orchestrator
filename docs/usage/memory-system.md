@@ -71,7 +71,7 @@ inputs:
     Question: {{memory.user_prompt}}
     Analysis: {{memory.analysis_output}}
     Research: {{memory.research_output}}
-    
+
     Provide a comprehensive answer.
 ```
 
@@ -112,7 +112,7 @@ workflows:
       - topic
       - analysis_depth: "detailed"
       - output_format: "report"
-    
+
     steps:
       # Step 1: Initial research
       - name: research
@@ -121,7 +121,7 @@ workflows:
           provider: "gemini"
           model: "gemini-1.5-pro"
           prompt: "Research the topic: {{params.topic}}. Provide key facts and findings."
-      
+
       # Step 2: Generate analysis questions based on research
       - name: generate_questions
         tool: "model_call"
@@ -133,9 +133,9 @@ workflows:
           prompt: |
             Topic: {{memory.topic}}
             Research findings: {{memory.research_output}}
-            
+
             Generate 3 specific analysis questions that would help create a {{params.analysis_depth}} analysis.
-      
+
       # Step 3: Answer analysis questions
       - name: detailed_analysis
         tool: "model_call"
@@ -147,9 +147,9 @@ workflows:
           prompt: |
             Research: {{memory.research_output}}
             Questions: {{memory.generate_questions_output}}
-            
+
             Provide detailed answers to each question based on the research.
-      
+
       # Step 4: Create final report
       - name: create_report
         tool: "model_call"
@@ -162,10 +162,10 @@ workflows:
             Topic: {{memory.topic}}
             Format: {{memory.output_format}}
             Depth: {{memory.analysis_depth}}
-            
+
             Research: {{memory.research_output}}
             Analysis: {{memory.detailed_analysis_output}}
-            
+
             Create a comprehensive {{memory.output_format}} on {{memory.topic}}.
 ```
 
@@ -240,9 +240,9 @@ inputs:
   prompt: |
     Context: {{memory.user_prompt}}
     Previous Analysis: {{memory.market_analysis_output}}
-    
+
     Task: Based on the context and analysis above, provide investment recommendations.
-    
+
     Format: Provide 3-5 specific recommendations with rationale.
 ```
 
@@ -256,7 +256,7 @@ inputs:
     {% if memory.previous_analysis_output %}
     Previous Analysis: {{memory.previous_analysis_output}}
     {% endif %}
-    
+
     Provide a comprehensive answer.
 ```
 

@@ -18,8 +18,10 @@ This section contains a breakdown of potential future features and improvements.
 - **Process-Centric & Role-Based Orchestration (e.g., CrewAI):** Simplify task delegation with structured workflows and roles.
 - **Toolkit-Based Orchestration (e.g., LangChain Agents):** Offer modularity and a vast ecosystem of tools.
 - **SOP-Driven Orchestration (e.g., MetaGPT):** Ensure coherent outputs for complex tasks using standardized processes.
+- **Configurable Sequential Chains:** Allow users to define multi-step workflows where the output of one model becomes the input for the next.
+  - **User-Defined Goals:** For each step in the chain, the user will define the `model` to use and a `prompt_template` that sets the goal for that step (e.g., "Critique this code: `{{previous_response}}`").
+  - **Self-Correction Pattern:** This allows for chains where a model refines its own output by using the same model for multiple, goal-oriented steps.
 - **Integrate Reflection Capabilities (e.g., Devon/Reflexion):** Allow the orchestrator to reflect on past decisions to improve future performance and aid in prompt optimization.
-- **Advanced Prompt Management:** Manage prompt chains or graphs where changes in one prompt have cascading effects.
 
 ### 2. Enhanced Tool Usage and Extensibility
 - **Standardized Tool Integration (MCP):** Function as a Model Context Protocol (MCP) client to access a growing list of pre-built integrations for file operations, database access, and web search.

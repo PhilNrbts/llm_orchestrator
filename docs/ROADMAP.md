@@ -8,20 +8,68 @@ The llm-orchestrator aims to be a powerful, local-first, and highly extensible t
 
 This section contains a breakdown of potential future features and improvements.
 
-### 1. Evolving the Orchestration Paradigm
-- **Advanced Parallel Processing with Summarization:** After an optional prompt reformulation, run a query against multiple models in parallel. In a second step, use a dedicated model to summarize the collected responses.
-  - **Settings (`config.yaml`):**
-    - `parallel_processing.summarizer.model`: Specify the provider and model for the summarization step (defaults to the main app model).
-    - `parallel_processing.summarizer.prompt`: Define the default prompt for the summarizer.
-    - `parallel_processing.ui.show_summary`: A boolean flag to control whether the final summary is displayed in the output.
-- **Conversation-Driven Orchestration (e.g., AutoGen):** Support dynamic routing of tasks based on conversational flow.
-- **Process-Centric & Role-Based Orchestration (e.g., CrewAI):** Simplify task delegation with structured workflows and roles.
-- **Toolkit-Based Orchestration (e.g., LangChain Agents):** Offer modularity and a vast ecosystem of tools.
-- **SOP-Driven Orchestration (e.g., MetaGPT):** Ensure coherent outputs for complex tasks using standardized processes.
-- **Configurable Sequential Chains:** Allow users to define multi-step workflows where the output of one model becomes the input for the next.
-  - **User-Defined Goals:** For each step in the chain, the user will define the `model` to use and a `prompt_template` that sets the goal for that step (e.g., "Critique this code: `{{previous_response}}`").
-  - **Self-Correction Pattern:** This allows for chains where a model refines its own output by using the same model for multiple, goal-oriented steps.
-- **Integrate Reflection Capabilities (e.g., Devon/Reflexion):** Allow the orchestrator to reflect on past decisions to improve future performance and aid in prompt optimization.
+### 1. Workflow Definition and Parameterization
+To enable powerful and modular orchestrations, we will implement a declarative workflow definition system. Users will define reusable workflows (or "chains") in `config.yaml` as a list of steps. Each step defines a task, its required inputs, and its execution context.
+
+**Core Concepts**
+- **Parameters (params):** Each workflow can define input parameters.
+- **Input Validation Schema:** To prevent runtime failures, parameters will support basic type validation. This makes workflows self-documenting and resilient to malformed inputs.
+- **Steps (steps):** A workflow consists of one or more steps that invoke registered tools.
+- **Inputs (inputs):** Tool arguments are populated dynamically from parameters or the outputs of previous steps using a simple `{{...}}` syntax.
+- **Scrutiny Gates (gate):** A step can be marked as a gate, pausing the workflow to await user approval. This is crucial for review, validation, and adding a human-in-the-loop.
+
+**Implement a Configuration Validation Schema:**
+- **Action:** Create a set of Pydantic models that define the valid structure for `config.yaml`.
+- **Rule:** The application must parse the configuration through these models on startup, providing clear, actionable error messages to the user if validation fails. This ensures that all user-defined workflows are structurally sound before execution.
+
+**Example: Research Workflow with a Scrutiny Gate**
+This example shows how a gate can be added to allow the user to review a critique before the final draft is written.
+```yaml
+# In config.yaml
+
+workflows:
+  detailed_research:
+    params:
+      - query
+      - draft_model: "gemini-1.5-pro"
+      - critique_model: "claude-3-opus"
+
+    steps:
+      - name: "generate_draft"
+        tool: "model_call"
+        inputs:
+          # ... (inputs for draft generation)
+
+      - name: "get_critique"
+        tool: "model_call"
+        inputs:
+          # ... (inputs for critique generation)
+
+      # --- GATE IMPLEMENTATION ---
+      - name: "review_critique"
+        gate: # This key marks the step as a scrutiny gate
+          prompt: |
+            The following critique has been generated.
+            Review it and decide whether to proceed with the final refinement.
+            ---
+            Critique: {{steps.get_critique.output}}
+            ---
+            Approve (y/n)?
+
+      - name: "final_refinement"
+        tool: "model_call"
+        # This step will only run if the "review_critique" gate is approved
+        inputs:
+          model: "{{params.draft_model}}"
+          prompt: |
+            You have received the following critique of your initial draft.
+            Critique: {{steps.get_critique.output}}
+            ---
+            Original Draft: {{steps.generate_draft.output}}
+            ---
+            Please rewrite the draft, fully addressing all points in the critique.
+```
+By adding Scrutiny Gates to your workflow ambitions, you create a system that is not only powerful and automated but also transparent, controllable, and trustworthy.
 
 ### 2. Enhanced Tool Usage and Extensibility
 - **Standardized Tool Integration (MCP):** Function as a Model Context Protocol (MCP) client to access a growing list of pre-built integrations for file operations, database access, and web search.
@@ -32,16 +80,71 @@ This section contains a breakdown of potential future features and improvements.
 - **Human-in-the-Loop:** Implement mandatory human approval for tool invocations, especially for destructive operations.
 - **Authorization Framework:** Implement an OAuth 2.1-based authorization framework for secure interactions.
 
-### 4. Advanced State and Memory Management
-- **Vector Databases:** Utilize vector databases (e.g., Pinecone, Weaviate) for shared knowledge and long-term memory.
-- **Tiered Memory Systems (e.g., MemGPT):** Implement a tiered memory system to manage long-context retention.
-- **Generative Agents Memory Stream:** Incorporate a memory architecture that records and retrieves past experiences for reflection and planning.
+### 4. ✅ Advanced Memory Management: Fractured Context - **COMPLETED!**
+**Status:** ✅ **IMPLEMENTED** (January 2025)
+**Documentation:** [`docs/cline/phase4-advanced-memory-management.md`](cline/phase4-advanced-memory-management.md)
 
-### 5. Enhanced Internal Code Representation
-- **Comprehensive Docstrings:** Ensure all code units have detailed docstrings.
-- **Hyperlinking:** Systematically use hyperlinks within code and documentation to connect related artifacts (ADRs, issues, etc.).
-- **AI-Powered Code Summarization:** Automatically generate summaries of code blocks to aid understanding.
-- **Interactive Code-Knowledge Graphs:** Represent the codebase as a structured knowledge graph to provide a holistic view of the architecture and dependencies.
+The fractured memory system has been fully implemented! This moves beyond simple all-or-nothing context history and allows each workflow step to precisely define the "slice" of conversation context it needs. This prevents context bloat and ensures workflows operate predictably with intelligent context awareness.
+
+**✅ Implemented Features:**
+- **SQLite-based Memory Store:** Local-first database storing memory slices with rich metadata
+- **Memory Manager:** Intelligent context orchestration and template variable injection
+- **Context Slicing:** Steps specify exactly what context they receive via `memory.needs` configuration
+- **Template Variables:** Support for `{{memory.variable}}` syntax in prompts
+- **Workflow Integration:** Seamless integration with existing workflow engine
+- **Comprehensive Testing:** Full test suite with real API integration verified
+
+**✅ Working Configuration Example:**
+```yaml
+workflows:
+  sequential_elaboration:
+    steps:
+      - name: initial_answer
+        tool: "model_call"
+        inputs:
+          prompt: "{{params.user_prompt}}"
+
+      - name: elaboration_generator
+        memory:
+          needs: ["user_prompt", "tool_output(initial_answer)"]
+        inputs:
+          prompt: "Given '{{memory.user_prompt}}' and '{{memory.initial_answer_output}}', elaborate..."
+
+      - name: responder
+        memory:
+          needs: ["tool_output(elaboration_generator)"]
+        inputs:
+          prompt: "{{memory.elaboration_generator_output}}"
+```
+
+**✅ Memory Patterns Supported:**
+- `user_prompt` - Original user input
+- `tool_output(step_name)` - Output from specific step
+- `last_output` - Most recent step output
+- `parameters` - Workflow parameters
+- Custom classifications and metadata
+
+**✅ Key Benefits Achieved:**
+- **Persistent Context:** Workflows maintain state across steps
+- **Intelligent Prompting:** Dynamic prompt generation using memory context
+- **Complex Reasoning:** Multi-step workflows with full context awareness
+- **Production Ready:** SQLite database with comprehensive error handling and testing
+
+The memory system now enables sophisticated multi-step AI orchestration workflows where each step intelligently builds upon previous results. This represents a major architectural advancement from stateless command processing to context-aware intelligent workflows.
+
+### 5. Developer Experience and Maintainability
+To ensure the project remains healthy and easy to contribute to, we will implement the following concrete actions. This replaces abstract goals with tangible development practices.
+
+**Establish a Clear ADR Process:**
+- **Action:** Create a formal template for Architecture Decision Records (ADRs) in the `docs/architecture/adr` directory.
+- **Rule:** Any significant change to the core architecture (e.g., adding a new memory system, changing the plugin API) must be preceded by an accepted ADR. This provides a clear, documented history of why decisions were made.
+
+**Implement Code Quality Gates:**
+- **Action:** Configure pre-commit hooks to run on every commit.
+- **Checks:**
+  - **Formatting:** Automatically format code with `black`.
+  - **Linting:** Enforce code quality standards with `ruff`.
+  - **Docstring Coverage:** Initially, check that all new functions have docstrings; later, enforce a minimum coverage percentage.
 
 ### 6. Robust Prompt Management
 - **Interactive Prompt Reformulation:** Add a flag (`--reformulate`) to allow a smaller, faster model to reformulate the user's initial prompt. The reformulated prompt will be presented to the user for confirmation or revision before being sent to the primary model.

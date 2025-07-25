@@ -1,0 +1,42 @@
+[
+  {
+    "role": "user",
+    "content": "hey"
+  },
+  {
+    "role": "gemini/gemini-1.5-flash-latest",
+    "content": "Hey there! How can I help you today?\n"
+  },
+  {
+    "role": "user",
+    "content": "hey"
+  },
+  {
+    "role": "mistral/mistral-7b",
+    "content": "Mistral response for: '--- Conversation History ---\nu...'"
+  },
+  {
+    "role": "user",
+    "content": "anything else?"
+  },
+  {
+    "role": "mistral/mistral-7b",
+    "content": "Mistral response for: 'anything else?...'"
+  },
+  {
+    "role": "user",
+    "content": "hey"
+  },
+  {
+    "role": "deepseek/deepseek-chat",
+    "content": "DeepSeek response for: '--- Conversation History ---\nu...'"
+  },
+  {
+    "role": "user",
+    "content": "anything else going on?"
+  },
+  {
+    "role": "deepseek/deepseek-chat",
+    "content": "DeepSeek response for: 'anything else going on?...'"
+  }
+]

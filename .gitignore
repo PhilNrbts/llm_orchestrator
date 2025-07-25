@@ -69,3 +69,6 @@ vault.lock
 # IDE specific files
 .idea/
 .vscode/
+
+# Documentation
+docs/build/

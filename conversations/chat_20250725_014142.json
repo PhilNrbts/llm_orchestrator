@@ -1,0 +1,18 @@
+[
+  {
+    "role": "user",
+    "content": "hey"
+  },
+  {
+    "role": "anthropic/claude-3-haiku-20240307",
+    "content": "Hello! How can I assist you today?"
+  },
+  {
+    "role": "user",
+    "content": "all good?"
+  },
+  {
+    "role": "mistral/mistral-small-latest",
+    "content": "All good on my end! \ud83d\ude0a How about you? Anything I can help with today?"
+  }
+]

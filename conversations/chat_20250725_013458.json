@@ -1,0 +1,34 @@
+[
+  {
+    "role": "user",
+    "content": "hey"
+  },
+  {
+    "role": "gemini/gemini-1.5-flash-latest",
+    "content": "Hey there! How can I help you today?\n"
+  },
+  {
+    "role": "user",
+    "content": "hey"
+  },
+  {
+    "role": "mistral/mistral-7b",
+    "content": "Error: Could not get response from Mistral. Details: API error occurred: Status 400\n{\"object\":\"error\",\"message\":\"Invalid model: mistral-7b\",\"type\":\"invalid_model\",\"param\":null,\"code\":\"1500\"}"
+  },
+  {
+    "role": "user",
+    "content": "hey"
+  },
+  {
+    "role": "deepseek/deepseek-chat",
+    "content": "Hey! It looks like there was an issue with the previous model (Mistral-7B), but I'm here and ready to help. What can I do for you today? \ud83d\ude0a"
+  },
+  {
+    "role": "user",
+    "content": "hey"
+  },
+  {
+    "role": "mistral/mistral-8x7b",
+    "content": "Error: Could not get response from Mistral. Details: API error occurred: Status 400\n{\"object\":\"error\",\"message\":\"Invalid model: mistral-8x7b\",\"type\":\"invalid_model\",\"param\":null,\"code\":\"1500\"}"
+  }
+]

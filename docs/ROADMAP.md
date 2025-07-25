@@ -9,6 +9,11 @@ The llm-orchestrator aims to be a powerful, local-first, and highly extensible t
 This section contains a breakdown of potential future features and improvements.
 
 ### 1. Evolving the Orchestration Paradigm
+- **Advanced Parallel Processing with Summarization:** After an optional prompt reformulation, run a query against multiple models in parallel. In a second step, use a dedicated model to summarize the collected responses.
+  - **Settings (`config.yaml`):**
+    - `parallel_processing.summarizer.model`: Specify the provider and model for the summarization step (defaults to the main app model).
+    - `parallel_processing.summarizer.prompt`: Define the default prompt for the summarizer.
+    - `parallel_processing.ui.show_summary`: A boolean flag to control whether the final summary is displayed in the output.
 - **Conversation-Driven Orchestration (e.g., AutoGen):** Support dynamic routing of tasks based on conversational flow.
 - **Process-Centric & Role-Based Orchestration (e.g., CrewAI):** Simplify task delegation with structured workflows and roles.
 - **Toolkit-Based Orchestration (e.g., LangChain Agents):** Offer modularity and a vast ecosystem of tools.

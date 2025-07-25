@@ -1,11 +1,13 @@
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional, Union
 
+
 class Param(BaseModel):
     type: str
     description: str
     required: bool = False
     default: Any = None
+
 
 class Step(BaseModel):
     name: str
@@ -16,9 +18,13 @@ class Step(BaseModel):
     gate: Optional[Dict[str, str]] = None  # For scrutiny gates
     on_failure: str = "abort_chain"  # Default error handling
 
+
 class Workflow(BaseModel):
-    params: Union[List[Union[str, Dict[str, Any]]], Dict[str, Param]]  # Handle both formats
+    params: Union[
+        List[Union[str, Dict[str, Any]]], Dict[str, Param]
+    ]  # Handle both formats
     steps: List[Step]
+
 
 class Config(BaseModel):
     main_llm: Optional[Dict[str, str]] = None

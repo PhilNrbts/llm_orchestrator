@@ -1,7 +1,67 @@
-chains:
-  example_chain:
-  - GenerateCode>/Developer)-gemini
-  - Critique>/Tester)-anthropic-haiku
 main_llm:
-  model: gemini-1.5-flash
   provider: gemini
+  model: gemini-1.5-flash
+
+workflows:
+  sequential_elaboration:
+    params:
+      - user_prompt
+      - initial_model: "gemini-1.5-flash"
+      - elaboration_model: "gemini-1.5-flash"
+      - responder_model: "claude-3-sonnet-20240229"
+    steps:
+      - name: initial_answer
+        tool: "model_call"
+        inputs:
+          model: "{{params.initial_model}}"
+          provider: "gemini"
+          prompt: "{{params.user_prompt}}"
+
+      - name: elaboration_prompt_generator
+        tool: "model_call"
+        memory:
+          needs: ["user_prompt", "tool_output(initial_answer)"]
+        inputs:
+          model: "{{params.elaboration_model}}"
+          provider: "gemini"
+          prompt: "Given the user's question '{{memory.user_prompt}}' and the initial model's answer '{{memory.initial_answer_output}}', generate a new prompt that asks another model to elaborate on a key aspect of the answer."
+
+      - name: responder
+        tool: "model_call"
+        memory:
+          needs: ["tool_output(elaboration_prompt_generator)"]
+        inputs:
+          model: "{{params.responder_model}}"
+          provider: "anthropic"
+          prompt: "{{memory.elaboration_prompt_generator_output}}"
+
+  parallel_summarizer:
+    params:
+      - user_prompt
+      - summarizer_model: "gemini-1.5-pro"
+    steps:
+      - name: reformulate
+        tool: "model_call"
+        inputs:
+          provider: "gemini"
+          model: "gemini-1.5-flash"
+          prompt: "Reformulate the following user prompt to be clearer and more effective for a large language model: '{{params.user_prompt}}'"
+      - name: parallel_execution
+        tool: "parallel_query"
+        inputs:
+          queries:
+            - provider: "anthropic"
+              model: "claude-3-haiku-20240307"
+              prompt_template: "{{steps.reformulate.output}}"
+            - provider: "deepseek"
+              model: "deepseek-chat"
+              prompt_template: "{{steps.reformulate.output}}"
+            - provider: "mistral"
+              model: "mistral-large-latest"
+              prompt_template: "{{steps.reformulate.output}}"
+      - name: summarize
+        tool: "model_call"
+        inputs:
+          provider: "gemini"
+          model: "{{params.summarizer_model}}"
+          prompt: "The user's original prompt was: '{{params.user_prompt}}'. The following are responses from different models: {{steps.parallel_execution.outputs}}. Please synthesize these into a single, comprehensive report."
